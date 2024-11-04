@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Event Schema",
+    "description": "Schema for user interaction, feedback, and recommendation events in the event bus",
+    "type": "object",
+    "properties": {
+      "event_id": {
+        "description": "Unique identifier for the event",
+        "type": "string",
+        "pattern": "^[a-fA-F0-9]{24}$"
+      },
+      "event_type": {
+        "description": "Type of the event (feedback, interaction, recommendation)",
+        "type": "string",
+        "enum": ["feedback", "interaction", "recommendation"]
+      },
+      "timestamp": {
+        "description": "Timestamp of when the event occurred",
+        "type": "string",
+        "format": "date-time"
+      },
+      "user_id": {
+        "description": "Unique identifier for the user involved in the event",
+        "type": "string"
+      },
+      "metadata": {
+        "description": "Additional event-specific metadata",
+        "type": "object",
+        "properties": {
+          "interaction_type": {
+            "description": "Type of interaction (e.g., click, view, like) if the event is an interaction",
+            "type": "string",
+            "enum": ["click", "view", "like"],
+            "nullable": true
+          },
+          "item_id": {
+            "description": "Item identifier for which the interaction occurred",
+            "type": "string",
+            "nullable": true
+          },
+          "feedback_text": {
+            "description": "Textual feedback from the user if the event is feedback",
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true
+          },
+          "recommendation_id": {
+            "description": "Recommendation identifier related to the feedback or interaction event",
+            "type": "string",
+            "nullable": true
+          },
+          "recommendation_items": {
+            "description": "List of items recommended to the user if the event is a recommendation",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    "required": ["event_id", "event_type", "timestamp", "user_id"],
+    "oneOf": [
+      {
+        "properties": {
+          "event_type": {
+            "const": "interaction"
+          },
+          "metadata": {
+            "required": ["interaction_type", "item_id"]
+          }
+        }
+      },
+      {
+        "properties": {
+          "event_type": {
+            "const": "feedback"
+          },
+          "metadata": {
+            "required": ["feedback_text", "recommendation_id"]
+          }
+        }
+      },
+      {
+        "properties": {
+          "event_type": {
+            "const": "recommendation"
+          },
+          "metadata": {
+            "required": ["recommendation_items"]
+          }
+        }
+      }
+    ],
+    "additionalProperties": false
+  }  

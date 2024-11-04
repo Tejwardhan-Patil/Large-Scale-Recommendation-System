@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-serving-deployment
+  labels:
+    app: model-serving
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: model-serving
+  template:
+    metadata:
+      labels:
+        app: model-serving
+    spec:
+      containers:
+      - name: model-serving-container
+        image: website.com/model-serving:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MODEL_CONFIG_PATH
+          value: "/config/model_config.yaml"
+        volumeMounts:
+        - name: model-serving-config
+          mountPath: /config
+          subPath: model_config.yaml
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: model-serving-config
+        configMap:
+          name: model-serving-config-map

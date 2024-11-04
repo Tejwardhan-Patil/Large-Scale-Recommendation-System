@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # Database Service
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: recommender_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # Data Ingestion Service
+  data_ingestion:
+    build:
+      context: ./data-ingestion
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ./data-ingestion/src:/app/src
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin123
+    networks:
+      - backend
+
+  # Model Training Service
+  model_training:
+    build:
+      context: ./model-training
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - ./model-training/src:/app/src
+      - ./model-training/data:/app/data
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin123
+    networks:
+      - backend
+      - ml
+
+  # Model Serving Service
+  model_serving:
+    build:
+      context: ./model-serving
+      dockerfile: Dockerfile
+    depends_on:
+      - model_training
+    volumes:
+      - ./model-serving/src:/app/src
+    environment:
+      MODEL_PATH: /app/models/trained_model
+    networks:
+      - frontend
+      - ml
+
+  # Event Bus for User Feedback
+  event_bus:
+    build:
+      context: ./event-bus
+      dockerfile: Dockerfile
+    networks:
+      - backend
+
+  # Monitoring and Auto-scaling Service
+  performance_monitoring:
+    build:
+      context: ./model-serving
+      dockerfile: Dockerfile
+    depends_on:
+      - model_serving
+    networks:
+      - backend
+      - ml
+
+volumes:
+  db_data:
+
+networks:
+  backend:
+  frontend:
+  ml:

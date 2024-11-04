@@ -1,0 +1,41 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Scala and Java build files
+*.class
+*.jar
+*.war
+*.ear
+target/
+build/
+
+# Python virtual environments
+venv/
+env/
+*.egg-info/
+.eggs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Data files
+*.parquet
+*.hdf5
+*.db
+
+# Log files
+*.log
+
+# Environment configuration files
+*.env
+.env.*
+
+# macOS-specific files
+.DS_Store
+
+# IDE-specific files
+.idea/
+.vscode/
+*.iml

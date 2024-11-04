@@ -1,0 +1,56 @@
+version: 1.0
+
+data_sources:
+  - name: source_db
+    type: database
+    connection:
+      host: db.website.com
+      port: 5432
+      database_name: production_db
+      username: db_user
+      password: secure_password
+    query: "SELECT * FROM data_table"
+    schedule: "0 2 * * *"  # Cron schedule for ingestion
+
+  - name: source_api
+    type: api
+    connection:
+      url: https://api.website.com/v1/data
+      method: GET
+      headers:
+        Authorization: "Bearer api_token"
+        Content-Type: "application/json"
+      params:
+        limit: 1000
+    schedule: "0 */4 * * *"  # Every 4 hours
+
+  - name: source_file
+    type: file
+    connection:
+      path: /data/input/source_file.csv
+      format: csv
+    schema:
+      columns:
+        - name: id
+          type: int
+        - name: name
+          type: string
+        - name: date
+          type: date
+    schedule: "0 3 * * *"  # Daily at 3 AM
+
+ingestion_settings:
+  retry_count: 3
+  retry_delay: 10  # Delay in seconds
+  batch_size: 500
+  parallel_threads: 4
+  log_level: INFO
+  target_storage:
+    type: database
+    connection:
+      host: db.website.com
+      port: 5432
+      database_name: target_db
+      username: db_user
+      password: secure_password
+    table: ingested_data

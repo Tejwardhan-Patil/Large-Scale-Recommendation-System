@@ -1,0 +1,93 @@
+event_bus:
+  type: "kafka" 
+  brokers: "localhost:9092"  
+  group_id: "event-bus-consumers"  
+  client_id: "event-bus-client"  
+  topic:
+    feedback: "feedback-topic"  
+    interaction: "interaction-topic"  
+    recommendation: "recommendation-topic" 
+  partitions: 3 
+  replication_factor: 1 
+
+producer:
+  acks: "all" 
+  retries: 5 
+  compression_type: "gzip" 
+  batch_size: 16384 
+  linger_ms: 10 
+  buffer_memory: 33554432 
+  enable_idempotence: true 
+
+consumer:
+  enable_auto_commit: true  
+  auto_commit_interval_ms: 5000  
+  session_timeout_ms: 10000  
+  max_poll_records: 500  
+  fetch_min_bytes: 1024  
+  fetch_max_wait_ms: 500  
+  auto_offset_reset: "earliest"
+
+security:
+  ssl:
+    enabled: false 
+    keystore_location: "/keystore.jks"
+    keystore_password: "keystore-password"
+    truststore_location: "/truststore.jks"
+    truststore_password: "truststore-password"
+  sasl:
+    enabled: false 
+    mechanism: "PLAIN" 
+    username: "event-bus-user"
+    password: "event-bus-password"
+
+monitoring:
+  enabled: true  
+  metrics_topic: "metrics-topic" 
+  interval_ms: 60000  
+  retention_ms: 86400000 
+
+backup:
+  enabled: true  
+  backup_frequency_hours: 12  
+  backup_location: "/backup"  
+  retention_days: 7  
+
+topics:
+  retention:
+    retention_ms: 604800000  
+    retention_bytes: -1  
+
+logging:
+  level: "INFO"  
+  log_to_file: true  
+  log_file_path: "/logs/event_bus.log" 
+  log_rotation:
+    max_file_size: "100MB"  
+    max_backup_files: 5  
+
+retry_policy:
+  max_attempts: 5  
+  initial_interval_ms: 1000  
+  multiplier: 2.0 
+  max_interval_ms: 60000 
+
+alerts:
+  enabled: true 
+  alert_email: "admin@website.com"
+  alert_threshold: 10 
+  alert_slack_webhook: "https://hooks.slack.com/services/webhook/url"
+
+heartbeat:
+  enabled: true
+  interval_ms: 30000
+  max_missed_heartbeats: 3
+
+schema_registry:
+  url: "http://localhost:8081"
+  compatibility: "BACKWARD"
+
+dead_letter_queue:
+  enabled: true
+  topic: "dlq-topic"
+  retention_ms: 259200000

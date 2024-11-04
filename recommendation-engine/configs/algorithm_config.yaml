@@ -1,0 +1,51 @@
+algorithm_settings:
+  collaborative_filtering:
+    enabled: true
+    similarity_metric: "cosine"
+    k_neighbors: 20
+    min_interactions: 5
+    regularization: 0.01
+    learning_rate: 0.005
+    max_iterations: 100
+
+  matrix_factorization:
+    enabled: true
+    factors: 100
+    regularization: 0.1
+    learning_rate: 0.01
+    max_iterations: 50
+    solver: "als"
+
+  deep_learning:
+    enabled: true
+    architecture: "neural_network"
+    hidden_layers: [128, 64, 32]
+    activation_function: "relu"
+    optimizer: "adam"
+    learning_rate: 0.001
+    batch_size: 128
+    epochs: 10
+
+ensemble:
+  strategies:
+    - algorithm: "collaborative_filtering"
+      weight: 0.5
+    - algorithm: "matrix_factorization"
+      weight: 0.3
+    - algorithm: "deep_learning"
+      weight: 0.2
+
+feedback_loop:
+  user_feedback_weight: 0.7
+  implicit_feedback: true
+  explicit_feedback: true
+  feedback_decay_rate: 0.95
+
+personalization:
+  enabled: true
+  personalization_factor: 0.8
+  dynamic_adjustment: true
+
+logging:
+  level: "INFO"
+  log_file: "/var/log/recommendation_engine.log"

@@ -1,0 +1,57 @@
+model:
+  name: "deep_learning_recommender"
+  type: "deep_learning"
+  framework: "TensorFlow"
+  version: "2.10.0"
+
+training:
+  batch_size: 128
+  epochs: 50
+  learning_rate: 0.001
+  optimizer: "adam"
+  loss_function: "categorical_crossentropy"
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+
+data:
+  train_data_path: "/data/train_data.csv"
+  validation_data_path: "/data/validation_data.csv"
+  test_data_path: "/data/test_data.csv"
+  input_features: 64
+  output_classes: 10
+
+early_stopping:
+  enabled: true
+  patience: 5
+  monitor: "val_loss"
+  mode: "min"
+
+checkpoint:
+  save_best_only: true
+  filepath: "/model_checkpoints/best_model.h5"
+
+logging:
+  log_dir: "/logs/training_logs/"
+  log_level: "INFO"
+
+hyperparameters:
+  layers:
+    - units: 512
+      activation: "relu"
+    - units: 256
+      activation: "relu"
+    - units: 128
+      activation: "relu"
+    - units: 64
+      activation: "relu"
+    - units: 10
+      activation: "softmax"
+
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+  save_results: "/results/evaluation_metrics.json"

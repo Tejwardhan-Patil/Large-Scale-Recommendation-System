@@ -1,0 +1,75 @@
+---
+- name: Large-Scale Recommendation System Playbook
+  hosts: all
+  become: yes
+  vars:
+    docker_image: "recommender_system_image:latest"
+    api_service: "inference_api"
+    db_service: "database_service"
+    model_path: "/opt/models"
+    s3_bucket: "s3://recommender-system-backup"
+
+  tasks:
+
+    - name: Ensure Docker is installed
+      ansible.builtin.package:
+        name: docker
+        state: present
+
+    - name: Pull the latest Docker image for the recommendation system
+      ansible.builtin.docker_image:
+        name: "{{ docker_image }}"
+        source: pull
+
+    - name: Deploy Inference API container
+      ansible.builtin.docker_container:
+        name: "{{ api_service }}"
+        image: "{{ docker_image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"
+        volumes:
+          - "{{ model_path }}:/models"
+
+    - name: Configure Database Service
+      ansible.builtin.docker_container:
+        name: "{{ db_service }}"
+        image: "{{ docker_image }}"
+        state: started
+        env:
+          DATABASE_URL: "jdbc:mysql://database_url/recommender"
+          DB_USER: "user"
+          DB_PASSWORD: "password"
+
+    - name: Run Data Ingestion Extractor
+      ansible.builtin.command: >
+        docker exec {{ api_service }} python /src/extractors/api_extractor.py
+      args:
+        chdir: /app
+
+    - name: Backup to S3
+      ansible.builtin.s3:
+        bucket: "{{ s3_bucket }}"
+        mode: push
+        src: "{{ model_path }}/"
+        dest: "backups/{{ inventory_hostname }}/"
+
+    - name: Restart Kubernetes Deployment
+      ansible.builtin.kubernetes:
+        name: recommender-deployment
+        namespace: recommender-system
+        state: restarted
+
+    - name: Clean old logs
+      ansible.builtin.find:
+        paths: /var/log/recommender-system
+        recurse: yes
+        age: 7d
+      register: old_logs
+
+    - name: Remove old logs
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ old_logs.files }}"

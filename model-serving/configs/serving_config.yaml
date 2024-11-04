@@ -1,0 +1,43 @@
+model-serving:
+  api:
+    host: "0.0.0.0"
+    port: 8080
+    protocol: "http"
+    endpoints:
+      - path: "/predict"
+        method: "POST"
+        description: "Endpoint for making predictions"
+        response_format: "application/json"
+  inference:
+    model_path: "/models/recommender_model/"
+    batch_size: 64
+    max_concurrent_requests: 100
+    timeout: 30
+  monitoring:
+    enabled: true
+    performance:
+      log_path: "/logs/performance/"
+      interval_seconds: 60
+  scaling:
+    autoscaling:
+      enabled: true
+      min_replicas: 2
+      max_replicas: 10
+      cpu_threshold: 70
+      memory_threshold: 80
+  security:
+    cors:
+      allowed_origins:
+        - "https://website.com"
+      allowed_methods:
+        - "POST"
+        - "OPTIONS"
+      allowed_headers:
+        - "Content-Type"
+        - "Authorization"
+    rate_limit:
+      enabled: true
+      requests_per_minute: 1000
+  logging:
+    level: "INFO"
+    log_file: "/logs/serving.log"

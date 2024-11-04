@@ -1,0 +1,58 @@
+database:
+  host: "localhost"
+  port: 5432
+  name: "mydatabase"
+  user: "myuser"
+  password: "mypassword"
+  max_connections: 100
+  connection_timeout: 30
+  pool_size: 20
+  ssl_mode: "disable"
+  backup:
+    enable: true
+    backup_directory: "/path/to/backup/directory"
+    retention_days: 7
+    schedule: "0 2 * * *"  # Daily backup at 2 AM (cron format)
+    compression: "gzip"     # Available options: gzip, bzip2, none
+
+logging:
+  level: "INFO"   # Available options: DEBUG, INFO, WARN, ERROR
+  log_file: "/path/to/logs/db.log"
+  rotation:
+    max_size: 10MB
+    max_files: 5
+    max_age: 30
+
+security:
+  encryption: true
+  encryption_key: "encryption-key-here"
+  enable_ssl: false
+  ssl_cert_file: "/path/to/ssl/cert.pem"
+  ssl_key_file: "/path/to/ssl/key.pem"
+
+replication:
+  enabled: false
+  replication_user: "replica_user"
+  replication_password: "replica_password"
+  replication_host: "replica_host"
+  replication_port: 5432
+
+retry_policy:
+  max_attempts: 5
+  wait_interval: 5  # in seconds
+  exponential_backoff: true
+  max_wait_time: 60  # in seconds
+
+pooling:
+  enabled: true
+  max_pool_size: 50
+  min_pool_size: 10
+  idle_timeout: 300  # in seconds
+
+cache:
+  enabled: true
+  type: "redis"
+  host: "localhost"
+  port: 6379
+  expiration: 600  # Cache expiration time in seconds
+  max_cache_size: 500MB

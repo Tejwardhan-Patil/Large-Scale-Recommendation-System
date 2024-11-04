@@ -1,0 +1,28 @@
+# General dependencies
+pandas==2.1.0
+numpy==1.24.4
+pyyaml==6.0  # For handling YAML configuration files
+
+# API and Database extraction
+requests==2.31.0  # For API interactions
+sqlalchemy==2.0.20  # For database extraction
+
+# Data cleaning and transformation
+scikit-learn==1.3.0  # For data transformation and preprocessing
+
+# Storage and loading
+boto3==1.28.0  # For AWS S3 integration
+hdfs==2.6.0  # For HDFS integration
+
+# Containerization support
+docker==6.1.3
+
+# Testing and development
+pytest==7.4.0
+pytest-cov==4.1.0  # For test coverage
+
+# Logging and monitoring
+loguru==0.7.0
+
+# Parallel processing for large datasets
+dask==2024.2.2
